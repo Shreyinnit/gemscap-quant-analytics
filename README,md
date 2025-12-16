@@ -1,0 +1,216 @@
+# 📊 Gemscap Quant Analytics Dashboard
+
+## Overview
+
+This project is a **real-time quantitative analytics prototype** designed to demonstrate **end-to-end system design**, from **live market data ingestion** to **statistical analytics** and **interactive visualization**.
+
+The application ingests live tick data from **Binance Futures WebSocket streams**, resamples it into multiple timeframes, computes key **statistical arbitrage analytics**, and presents the results through an **interactive Streamlit dashboard**.
+
+The system is intentionally designed as a **modular, extensible prototype**, suitable for a **multi-asset trading or quantitative research environment**, rather than a single-use academic project.
+
+## Key Features
+
+### 🔹 Data Ingestion
+
+* Live tick data streamed from Binance Futures using the provided HTML WebSocket tool
+* Raw ticks stored in **NDJSON format**
+* Defensive ingestion handling for missing, empty, or delayed data feeds
+
+### 🔹 Sampling & Storage
+
+* Resampling of tick data into:
+
+  * **1 second**
+  * **1 minute**
+  * **5 minute** intervals
+* Aggregation logic:
+
+  * **Price** → last traded price
+  * **Volume** → summed traded quantity
+
+## Quantitative Analytics
+
+### 🔹 Price Statistics
+
+* Log returns
+* Rolling mean
+* Rolling standard deviation
+* Rolling volatility
+
+### 🔹 Hedge Ratio (OLS Regression)
+
+* Ordinary Least Squares regression to estimate pair relationship
+
+### 🔹 Spread Construction
+
+[
+\text{Spread} = Y - \beta X
+]
+
+### 🔹 Z-Score
+
+* Rolling normalization of spread using mean and standard deviation
+
+### 🔹 Rolling Correlation
+
+* Time-varying correlation between paired assets
+
+### 🔹 ADF Stationarity Test
+
+* Augmented Dickey-Fuller test to validate mean-reversion assumptions
+
+## Live Analytics Design
+
+The dashboard supports **near-real-time analytics updates**:
+
+* **High-frequency analytics** (spread, z-score, alerts) update every **500 ms**
+* **Lower-frequency resampled plots** (1m / 5m) update only when new bars are formed
+
+This design balances **responsiveness**, **computational efficiency**, and **clarity**, closely reflecting real-world quantitative research workflows.
+
+## Alerts & Trading Signals
+
+* User-defined **z-score threshold alerts**
+* Simple **mean-reversion trading signal**:
+
+  * **LONG spread**
+  * **SHORT spread**
+  * **HOLD**
+
+Alerts update in near-real-time as new tick data arrives.
+
+## Visualization
+
+* Interactive charts built using **Plotly**
+* Full support for **zoom, pan, and hover**
+* Logical dashboard flow:
+
+  1. Market overview (prices, volume)
+  2. Pair relationship (hedge ratio, correlation)
+  3. Trading signals (spread, z-score)
+  4. Statistical validation (ADF test)
+  5. Risk metrics (volatility)
+
+## Data Export
+
+* Download processed analytics and signals as **CSV**
+* Enables offline analysis and further research
+
+## Installation & Running the App
+
+### Prerequisites
+
+* Python **3.9+**
+* `pip`
+
+### Setup
+
+```bash
+python -m venv venv
+source venv/bin/activate   # Mac/Linux
+venv\Scripts\activate      # Windows
+pip install -r requirements.txt
+```
+
+### Run the Application
+
+```bash
+streamlit run app.py
+```
+
+The application runs locally using a **single command**, as required.
+
+## Project Structure
+
+```
+gemscap_quant_app/
+│
+├── app.py
+├── README.md
+├── requirements.txt
+│
+├── data/
+│   └── raw_ticks.ndjson
+│
+├── ingestion/
+│   └── data_loader.py
+│
+├── analytics/
+│   ├── resampling.py
+│   ├── price_stats.py
+│   ├── hedge_ratio.py
+│   ├── spread_zscore.py
+│   ├── correlation.py
+│   └── adf_test.py
+│
+├── alerts/
+│   └── alert_engine.py
+│
+└── diagrams/
+    ├── architecture.drawio
+    └── architecture.png
+```
+
+## Architecture & Design Philosophy
+
+The system follows a **loosely coupled, layered architecture**:
+
+* **Ingestion Layer**: Reads and normalizes raw tick data
+* **Resampling Layer**: Converts ticks into multiple timeframes
+* **Analytics Layer**: Stateless quantitative functions (OLS, spread, z-score, correlation, ADF)
+* **Visualization Layer**: Interactive Streamlit dashboard
+* **Alerting Layer**: Rule-based alerts driven by live analytics
+
+Design priorities:
+
+* Clarity over premature optimization
+* Modularity and extensibility
+* Easy replacement of data sources or storage layers
+
+## Architecture & Design Considerations
+
+The system architecture emphasizes clarity, modularity, and extensibility.
+
+- **Diagram Clarity:** The architecture diagram follows the data flow from ingestion to visualization, making system behavior easy to understand.
+- **Trade-offs:** Simplicity and debuggability were prioritized over production-scale infrastructure (e.g., NDJSON storage over databases, periodic refresh over true streaming).
+- **Extensibility:** Each layer (ingestion, analytics, UI) is loosely coupled, allowing new data sources or analytics to be added with minimal refactoring.
+- **Redundancy Handling:** The system gracefully handles empty or delayed data feeds and insufficient samples for analytics.
+- **Logging:** While lightweight for this prototype, the design anticipates structured logging and monitoring in a production environment.
+
+
+## Scaling Considerations
+
+Although the current implementation runs locally, the architecture supports future scaling:
+
+* Replace NDJSON storage with **Redis** or **PostgreSQL**
+* Introduce **Kafka** or message queues for ingestion
+* Deploy analytics as **microservices**
+* Support additional data feeds (REST APIs, CME futures, historical CSVs)
+
+These enhancements can be introduced with **minimal refactoring** due to the modular design.
+
+
+## ChatGPT Usage Transparency
+
+ChatGPT was used as a development aid for:
+
+* Structuring the project architecture and folder layout
+* Debugging Python, pandas, and Streamlit issues
+* Improving modularity and code readability
+* Drafting documentation and explanations
+
+All generated suggestions were **reviewed, understood, and adapted** before use.
+Core analytics logic, mathematical reasoning, and design decisions were **independently validated**.
+
+
+## Conclusion
+
+This project demonstrates the ability to:
+
+* Design and implement an end-to-end quantitative analytics system
+* Work with real-time financial market data
+* Apply statistical arbitrage concepts correctly
+* Build interactive, user-friendly dashboards
+* Communicate design decisions clearly and professionally
+
+
